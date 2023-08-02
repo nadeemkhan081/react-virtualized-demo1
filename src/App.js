@@ -1,25 +1,53 @@
-import logo from './logo.svg';
-import './App.css';
+import React from 'react';
+import { List, AutoSizer } from 'react-virtualized';
+import faker from 'faker';
 
-function App() {
+const generateRandomHeight = () => {
+  return 50 + Math.round(Math.random() * 100); // Random height between 50 and 150
+};
+
+const generateRandomData = (count) => {
+  const data = [];
+  for (let i = 0; i < count; i++) {
+    const item = {
+      name: faker.name.findName(),
+      height: generateRandomHeight(),
+    };
+    data.push(item);
+  }
+  return data;
+};
+
+const App = () => {
+  const itemCount = 10000; //No of items to generate.
+
+  const data = generateRandomData(itemCount);
+
+  const rowRenderer = ({ key, index, style }) => {
+    const item = data[index];
+
+    return (
+      <div key={key} style={{ ...style, height: item.height }}>
+        {item.name}
+      </div>
+    );
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div style={{ height: '900px', width: '50%' }}>
+      <AutoSizer>
+        {({ height, width }) => (
+          <List
+            height={height}
+            width={width}
+            rowCount={itemCount}
+            rowHeight={({ index }) => data[index].height}
+            rowRenderer={rowRenderer}
+          />
+        )}
+      </AutoSizer>
     </div>
   );
-}
+};
 
 export default App;
